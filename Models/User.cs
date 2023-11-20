@@ -1,14 +1,22 @@
 using System;
-namespace project_api_poo_ii.Models
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
-public class User
+namespace api2.Models;
+public class User : IdentityUser<int>
 {
-    private integer Id { get; }
-    private string firstName { get; set; }
-    private string lastName { get; set; }
-    private string Name { get; } = firstName + ' ' + lastName
-    private string email { get; set; }
-    private string telephone { get; set; }
-    private DateTime birthDate { get; set; }
-    private string document { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Password { get; set; }
+    public DateTime Birthdate { get; set; }
+    public string Document { get; set; }
+    public string Type { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+
+    public Address Address { get; set; }
 }
+
+
