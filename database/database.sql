@@ -66,8 +66,8 @@ CREATE TABLE "Order" (
     "CreatedAt" timestamp with time zone NOT NULL,
     "UpdatedAt" timestamp with time zone NOT NULL,
     CONSTRAINT "PK_Order" PRIMARY KEY ("Id"),
-    CONSTRAINT "FK_Order_Discount_DiscountId" FOREIGN KEY ("DiscountId") REFERENCES "Discount" ("Id"),      
-    CONSTRAINT "FK_Order_User_UserId" FOREIGN KEY ("UserId") REFERENCES "User" ("Id") ON DELETE CASCADE     
+    CONSTRAINT "FK_Order_Discount_DiscountId" FOREIGN KEY ("DiscountId") REFERENCES "Discount" ("Id"),
+    CONSTRAINT "FK_Order_User_UserId" FOREIGN KEY ("UserId") REFERENCES "User" ("Id") ON DELETE CASCADE
 );
 
 CREATE TABLE "Payment" (
@@ -166,67 +166,29 @@ VALUES ('20231120042328_AddPasswordToUser', '7.0.14');
 
 COMMIT;
 
-CREATE OR REPLACE FUNCTION updatedAt()
-RETURNS TRIGGER AS
-$$
-BEGIN
-    NEW.UpdatedAt := CURRENT_TIMESTAMP;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+START TRANSACTION;
 
-CREATE TRIGGER address_updated_at
-    BEFORE UPDATE
-    ON ecommerce."Address"
-    FOR EACH ROW
-    WHEN (OLD.* IS DISTINCT FROM NEW.*)
-EXECUTE FUNCTION updatedAt();
+CREATE UNIQUE INDEX "IX_User_Email" ON "User" ("Email");
 
-CREATE TRIGGER user_updated_at
-    BEFORE UPDATE
-    ON ecommerce."User"
-    FOR EACH ROW
-    WHEN (OLD.* IS DISTINCT FROM NEW.*)
-EXECUTE FUNCTION updatedAt();
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20231120045631_AuthChanges', '7.0.14');
 
-CREATE TRIGGER category_updated_at
-    BEFORE UPDATE
-    ON ecommerce."Category"
-    FOR EACH ROW
-    WHEN (OLD.* IS DISTINCT FROM NEW.*)
-EXECUTE FUNCTION updatedAt();
+COMMIT;
 
-CREATE TRIGGER product_updated_at
-    BEFORE UPDATE
-    ON ecommerce."Product"
-    FOR EACH ROW
-    WHEN (OLD.* IS DISTINCT FROM NEW.*)
-EXECUTE FUNCTION updatedAt();
+START TRANSACTION;
 
-CREATE TRIGGER payment_updated_at
-    BEFORE UPDATE
-    ON ecommerce."Payment"
-    FOR EACH ROW
-    WHEN (OLD.* IS DISTINCT FROM NEW.*)
-EXECUTE FUNCTION updatedAt();
+ALTER TABLE "Product" ADD "Image" text NULL;
 
-CREATE TRIGGER discount_updated_at
-    BEFORE UPDATE
-    ON ecommerce."Discount"
-    FOR EACH ROW
-    WHEN (OLD.* IS DISTINCT FROM NEW.*)
-EXECUTE FUNCTION updatedAt();
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20231120055131_ProductImage', '7.0.14');
 
-CREATE TRIGGER order_updated_at
-    BEFORE UPDATE
-    ON ecommerce."Order"
-    FOR EACH ROW
-    WHEN (OLD.* IS DISTINCT FROM NEW.*)
-EXECUTE FUNCTION updatedAt();
+COMMIT;
 
-CREATE TRIGGER order_item_updated_at
-    BEFORE UPDATE
-    ON ecommerce."OrderItem"
-    FOR EACH ROW
-    WHEN (OLD.* IS DISTINCT FROM NEW.*)
-EXECUTE FUNCTION updatedAt();
+START TRANSACTION;
+
+ALTER TABLE "Category" ADD "Image" text NULL;
+
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20231124025457_AddCategoryImage', '7.0.14');
+
+COMMIT;

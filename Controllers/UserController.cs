@@ -6,10 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using api2.Models;
+using Microsoft.AspNetCore.Cors;
 
 namespace api2.Controllers
 {
     [Route("api/[controller]")]
+    [EnableCors("AllowAllHeaders")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -24,14 +26,19 @@ namespace api2.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUser()
         {
-            return await _context.User.ToListAsync();
+            return await _context.User.Join(_context.User.Include(u => u.Address),
+                result => result.Id,
+                user => user.Id,
+                (result, user) => user).ToListAsync();
         }
 
         // GET: api/User/5
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-            var user = await _context.User.FindAsync(id);
+            var user = await _context.User
+                .Include(u => u.Address)
+                .FirstOrDefaultAsync(u => u.Id == id);
 
             if (user == null)
             {

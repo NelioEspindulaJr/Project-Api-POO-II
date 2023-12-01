@@ -6,18 +6,60 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using api2.Models;
+using Microsoft.AspNetCore.Cors;
+using api2.services;
 
 namespace api2.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    [EnableCors("AllowAllHeaders")]
+    [Produces("application/json")]
     public class OrderController : ControllerBase
     {
         private readonly Context _context;
+        private readonly Context _context2;
+        private readonly PaymentService _paymentService;
 
-        public OrderController(Context context)
+        public class PaymentRequest
+        {
+            public Order Order { get; set; }
+            public PaymentInfo PaymentInfo { get; set; }
+            public List<ProductInfo> Products { get; set; }
+        }
+
+        public class ProductInfo
+        {
+            public int Id { get; set; }
+            public int OnCartAmount { get; set; }
+        }
+
+        public class PayOrderRequest
+        {
+            public PaymentInfo PaymentInfo { get; set; }
+            public Order Order { get; set; }
+            public List<IProduct> Products { get; set; }
+        }
+
+
+        public class IProduct
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public double Price { get; set; }
+            public string Sku { get; set; }
+            public int Quantity { get; set; }
+            public bool Available { get; set; }
+            public int CategoryId { get; set; }
+            public int OnCartAmount { get; set; }
+        }
+
+        public OrderController(Context context, PaymentService paymentService)
         {
             _context = context;
+
+            _context2 = context;
+
+            _paymentService = paymentService;
         }
 
         // GET: api/Order
@@ -83,6 +125,56 @@ namespace api2.Controllers
             return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
         }
 
+        [HttpPost("pay")]
+        public async Task<ActionResult<Order>> PayForOrder([FromBody] PayOrderRequest request)
+        {
+            try
+            {
+
+
+                var newOrder = new Order
+                {
+                    UserId = request.Order.UserId,
+                    Total = request.Order.Total,
+                    Status = request.Order.Status,
+                    PaymentType = request.Order.PaymentType,
+                    DiscountId = request.Order?.DiscountId,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+
+
+                _context.Order.Add(newOrder);
+
+                await _context.SaveChangesAsync();
+
+                foreach (var productInfo in request.Products)
+                {
+                    var orderItem = new OrderItem
+                    {
+                        OrderId = newOrder.Id,
+                        ProductId = productInfo.Id,
+                        Quantity = productInfo.OnCartAmount,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow
+                    };
+
+                    _context.OrderItem.Add(orderItem);
+                }
+
+                await _context.SaveChangesAsync();
+
+                ConfirmOrder(request.PaymentInfo, newOrder);
+
+                return Ok(newOrder);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro interno: {ex.Message}");
+            }
+        }
+
+
         // DELETE: api/Order/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
@@ -102,6 +194,32 @@ namespace api2.Controllers
         private bool OrderExists(int id)
         {
             return _context.Order.Any(e => e.Id == id);
+        }
+
+        [HttpPost("pay/confirm")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public object ConfirmOrder(PaymentInfo paymentInfo, Order Order)
+        {
+            var order = Order;
+
+            bool paymentSuccess = _paymentService.ProcessPayment(Order, paymentInfo);
+
+            if (paymentSuccess)
+            {
+
+                order.Status = "Completed";
+
+                _context.Update(order);
+
+                _context.SaveChanges();
+
+                return Ok(new { Message = "Pagamento bem-sucedido. Ordem concluída." });
+            }
+            else
+            {
+                return BadRequest(new { Message = "Falha no processamento do pagamento." });
+            }
         }
     }
 }

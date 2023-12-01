@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Gabriel Braga\\Documents\\project_zip\\api2\\api2.csproj": {}
+    "/home/nelioespindulajr/Desktop/Project-Api-POO-II/api2.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Gabriel Braga\\Documents\\project_zip\\api2\\api2.csproj": {
+    "/home/nelioespindulajr/Desktop/Project-Api-POO-II/api2.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Gabriel Braga\\Documents\\project_zip\\api2\\api2.csproj",
+        "projectUniqueName": "/home/nelioespindulajr/Desktop/Project-Api-POO-II/api2.csproj",
         "projectName": "api2",
-        "projectPath": "C:\\Users\\Gabriel Braga\\Documents\\project_zip\\api2\\api2.csproj",
-        "packagesPath": "C:\\Users\\Gabriel Braga\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Gabriel Braga\\Documents\\project_zip\\api2\\obj\\",
+        "projectPath": "/home/nelioespindulajr/Desktop/Project-Api-POO-II/api2.csproj",
+        "packagesPath": "/home/nelioespindulajr/.nuget/packages/",
+        "outputPath": "/home/nelioespindulajr/Desktop/Project-Api-POO-II/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Gabriel Braga\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/home/nelioespindulajr/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
@@ -38,11 +38,11 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "dependencies": {
-            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+            "Microsoft.AspNetCore.Cors": {
               "target": "Package",
-              "version": "[7.0.14, )"
+              "version": "[2.2.0, )"
             },
-            "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation": {
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
               "target": "Package",
               "version": "[7.0.14, )"
             },
@@ -83,10 +83,6 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.5.0, )"
-            },
-            "bootstrap": {
-              "target": "Package",
-              "version": "[5.3.2, )"
             }
           },
           "imports": [
@@ -100,6 +96,20 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[7.0.13, 7.0.13]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.linux-x64",
+              "version": "[7.0.13, 7.0.13]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[7.0.13, 7.0.13]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -108,7 +118,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/7.0.403/RuntimeIdentifierGraph.json"
         }
       }
     }

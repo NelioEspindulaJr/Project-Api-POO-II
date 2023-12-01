@@ -6,10 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using api2.Models;
+using Microsoft.AspNetCore.Cors;
 
 namespace api2.Controllers
 {
     [Route("api/[controller]")]
+    [EnableCors("AllowAllHeaders")]
     [ApiController]
     public class CategoryController : ControllerBase
     {

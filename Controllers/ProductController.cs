@@ -1,15 +1,16 @@
-using System;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using api2.Models;
+using System;
+using Microsoft.AspNetCore.Cors;
 
 namespace api2.Controllers
 {
     [Route("api/[controller]")]
+    [EnableCors("AllowAllHeaders")]
     [ApiController]
     public class ProductController : ControllerBase
     {
@@ -24,7 +25,10 @@ namespace api2.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProduct()
         {
-            return await _context.Product.ToListAsync();
+            return await _context.Product.Join(_context.Product.Include(p => p.Category),
+                result => result.Id,
+                product => product.Id,
+                (result, product) => product).ToListAsync();
         }
 
         // GET: api/Product/5
@@ -97,6 +101,35 @@ namespace api2.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        // GET: api/Product/FeaturedProducts
+        [HttpGet("FeaturedProducts")]
+        public async Task<ActionResult<IEnumerable<Product>>> FeaturedProducts([FromQuery] int? by_category_id)
+        {
+            IQueryable<Product> productsQuery = _context.OrderItem
+            .GroupBy(oi => oi.ProductId)
+            .Select(g => new
+            {
+                ProductId = g.Key,
+                QuantitySold = g.Sum(oi => oi.Quantity)
+            })
+            .OrderByDescending(result => result.QuantitySold)
+            .Take(5)
+            .Join(
+                _context.Product.Include(p => p.Category),
+                result => result.ProductId,
+                product => product.Id,
+                (result, product) => product
+            );
+
+            if (by_category_id.HasValue)
+            {
+                productsQuery = productsQuery.Where(p => p.CategoryId == by_category_id.Value);
+            }
+
+            var products = await productsQuery.ToListAsync();
+            return Ok(products);
         }
 
         private bool ProductExists(int id)

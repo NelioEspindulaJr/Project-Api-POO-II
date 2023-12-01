@@ -9,13 +9,9 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = api2
 build_property.RootNamespace = api2
-build_property.ProjectDir = C:\Users\Gabriel Braga\Documents\project_zip\api2\
+build_property.ProjectDir = /home/nelioespindulajr/Desktop/Project-Api-POO-II/
 build_property.RazorLangVersion = 7.0
 build_property.SupportLocalizedComponentNames = 
-build_property.GenerateRazorMetadataSourceChecksumAttributes = true
-build_property.MSBuildProjectDirectory = C:\Users\Gabriel Braga\Documents\project_zip\api2
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = /home/nelioespindulajr/Desktop/Project-Api-POO-II
 build_property._RazorSourceGeneratorDebug = 
-
-[C:/Users/Gabriel Braga/Documents/project_zip/api2/Pages/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXguY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 

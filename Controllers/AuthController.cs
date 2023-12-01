@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using api2.Models;
@@ -11,11 +9,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Cors;
 
 namespace api2.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [EnableCors("AllowAllHeaders")]
     public class AuthController : ControllerBase
     {
         private readonly UserManager<User> userManager;
@@ -60,22 +60,19 @@ namespace api2.Controllers
                         {
                         new Claim(ClaimTypes.Name, user.Id.ToString())
                         }),
-                        Expires = DateTime.UtcNow.AddHours(1), // Tempo de expiração do token
+                        Expires = DateTime.UtcNow.AddHours(1),
                         SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                     };
                     var token = tokenHandler.CreateToken(tokenDescriptor);
                     var tokenString = tokenHandler.WriteToken(token);
 
-                    return Ok(new { Token = tokenString });
+                    return Ok(new { User = user });
                 }
                 else
                 {
-                    // Tratar erros de criação de usuário
                     return BadRequest(new { Errors = result.Errors.Select(e => e.Description) });
                 }
             }
-
-            // ModelState é inválido, retornar para a página de registro com mensagens de erro
             return BadRequest(new { Errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
         }
 
@@ -94,18 +91,16 @@ namespace api2.Controllers
                     {
                     new(ClaimTypes.Name, user.Id.ToString())
                     }),
-                    Expires = DateTime.UtcNow.AddHours(1), // Tempo de expiração do token
+                    Expires = DateTime.UtcNow.AddHours(1),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                 };
                 var token = tokenHandler.CreateToken(tokenDescriptor);
                 var tokenString = tokenHandler.WriteToken(token);
 
-                return Ok(new { Token = tokenString });
+                return Ok(new { Token = tokenString, User = user });
             }
 
             return Unauthorized();
         }
     }
-
-
 }
